@@ -1,0 +1,120 @@
+if (DATA_COUNT == count){
+		recieveBytes += count;
+		ui->label_8->setText(QString::number(recieveBytes) + " bytes");
+		qDebug() << "recieve data:: Right size is : " + QString::number(DATA_COUNT);
+		qDebug() << "recieve data:: Real size is : " + QString::number(count);
+
+		/*修改注释掉了
+		for (int i = 0; i < sizeof(buffer) / sizeof(*buffer); ++i)
+			qDebug() << QString("buffer[%1]: ").arg(i) << buffer[i];*/
+
+		readData = QByteArray(buffer,DATA_COUNT);
+		dataShare = readData;						//共享获得的数据
+
+		qDebug() << "Important message: --------buffer-------- :"  << QByteArray(buffer);	//QString构造后变成了Unicode编码，输出格式为 \u.
+		qDebug() << "Important message about recieveData: --------readData-------- :" << readData;			//输出格式为 \x.
+		qDebug() << "Important message: --------readData size-------- :" << readData.size();
+		qDebug() << "Important message: --------readData[1] unsigned-------- :" << byte(readData.at(1));	
+
+		qDebug() << "Important message: --------readData[1] unsigned hexstring-------- :" 
+				 << QString::number(byte(readData.data()[1]), 16).toUpper();
+		qDebug() << "Important message: --------readData string-------- :" << ByteArrayToHexstring(readData);
+
+
+		if (readData.contains("#XJTU#")){
+
+			if ("#XJTU#" == readData.mid(0, 6)){
+				qDebug() << "complete message with #XJTU# in its head. " << endl;
+				showText(readData);
+				recieveBytes += count;
+				ui->label_8->setText(QString::number(recieveBytes) + " bytes");
+				return;
+			}
+			else{
+				qDebug() << "non-complete message with #XJTU# in its mid. " << endl;
+				int pos = readData.indexOf("#XJTU#");
+				showText(readData.mid(pos));
+				recieveBytes += count;
+				ui->label_8->setText(QString::number(recieveBytes) + " bytes");
+				return;
+			}
+
+		}
+		else{
+			qDebug() << "interference message without #XJTU# header! " << endl;
+			qDebug() << "won't be shown in textBrowser. " << endl;
+		}
+		showText(readData);
+
+	}
+	else{
+		qDebug() << "recieve data:: Right size is : " + QString::number(DATA_COUNT);
+		qDebug() << "recieve data:: Real size is : " + QString::number(count);
+		qDebug() << "Important message: --------readData string-------- :"
+			<< ByteArrayToHexstring(QByteArray(buffer, DATA_COUNT));
+		
+		/*相当于自己写了一个判断buffer是否为空的程序*/
+		bool bf = 0;
+		for (int i = 0; i < sizeof buffer; ++i){
+			bf = bf||buffer[i];
+			if (bf)
+				break;
+		}
+		if (!bf)
+			return;
+		/*不加第二个参数构造的画，默认将buffer指向一个长度动态分配的字符串，因为buffer都是0，所以字符串也为空*/
+		/*加了参数则分配了固定的长度，字符串的元素都是0*/
+		showText(QByteArray(buffer, DATA_COUNT - 1));
+	}
+
+
+
+	if (DATA_COUNT == count){
+		readData = QByteArray(buffer,DATA_COUNT);
+		dataShare = readData;						//共享获得的数据
+		recieveBytes += readData.size();
+		qDebug() << "readdata.size is: " << readData.size();
+		ui->label_8->setText(QString::number(recieveBytes) + " bytes");
+		showText(readData);
+
+		qDebug() << "recieve data:: Right size is : " + QString::number(DATA_COUNT);
+		qDebug() << "recieve data:: Real size is : " + QString::number(count);
+
+		/*修改注释掉了
+		for (int i = 0; i < sizeof(buffer) / sizeof(*buffer); ++i)
+		qDebug() << QString("buffer[%1]: ").arg(i) << buffer[i];*/
+
+		qDebug() << "Important message: --------buffer-------- :" << QByteArray(buffer);	//QString构造后变成了Unicode编码，输出格式为 \u.
+		qDebug() << "Important message about recieveData: --------readData-------- :" << readData;			//输出格式为 \x.
+		qDebug() << "Important message: --------readData size-------- :" << readData.size();
+		qDebug() << "Important message: --------readData[1] unsigned-------- :" << byte(readData.at(1));
+		qDebug() << "Important message: --------readData[1] unsigned hexstring-------- :"
+			<< QString::number(byte(readData.data()[1]), 16).toUpper();
+		qDebug() << "Important message: --------readData string-------- :" << ByteArrayToHexstring(readData);
+
+
+		if (readData.contains("#XJTU#")){
+
+			if ("#XJTU#" == readData.mid(0, 6)){
+				qDebug() << "complete message with #XJTU# in its head. " << endl;
+				return;
+			}
+			else{
+				qDebug() << "non-complete message with #XJTU# in its mid. " << endl;
+				int pos = readData.indexOf("#XJTU#");
+				return;
+			}
+
+		}
+		else{
+			qDebug() << "interference message without #XJTU# header! " << endl;
+			qDebug() << "won't be shown in textBrowser. " << endl;
+		}
+
+	}
+	else{
+		qDebug() << "recieve data:: Right size is : " + QString::number(DATA_COUNT);
+		qDebug() << "recieve data:: Real size is : " + QString::number(count);
+		qDebug() << "Important message: --------readData string-------- :"
+			<< ByteArrayToHexstring(QByteArray(buffer));
+	}
